@@ -16,7 +16,7 @@ resources:
 variables:
   tag: '$(Build.BuildId)'
   projectname: 'my-dev'
-  dockerRegistry: 'docker.io'  # Specify your Docker registry here
+  #dockerRegistry: 'docker.io'  # Specify your Docker registry here
   dockerHubUsername: '<ShaheerAhmed123>'  # Replace with your Docker Hub username
   dockerHubPassword: '<abc1234567>'  # Replace with your Docker Hub password
 
@@ -134,7 +134,7 @@ stages:
       displayName: Login to Docker Hub
       inputs:
         command: 'login'
-        containerRegistry: '$(dockerRegistry)'
+        containerRegistry: 'https://index.docker.io/v1/'
         username: '$(dockerHubUsername)'  # Use the variable for Docker Hub username
         password: '$(dockerHubPassword)'  # Use the variable for Docker Hub password
 
