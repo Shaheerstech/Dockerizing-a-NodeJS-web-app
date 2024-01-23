@@ -134,7 +134,7 @@ stages:
       displayName: Login to Docker Hub
       inputs:
         command: 'login'
-        containerRegistry: 'https://index.docker.io/v1/'
+        #containerRegistry: 'https://index.docker.io/v1/'
         username: '$(dockerHubUsername)'  # Use the variable for Docker Hub username
         password: '$(dockerHubPassword)'  # Use the variable for Docker Hub password
 
