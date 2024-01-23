@@ -17,7 +17,7 @@ variables:
   tag: '$(Build.BuildId)'
   projectname: 'my-dev'
   #dockerRegistry: 'docker.io'  # Specify your Docker registry here
-  dockerHubUsername: '<ShaheerAhmed123>'  # Replace with your Docker Hub username
+  dockerHubUsername: '<shaheerahmed123>'  # Replace with your Docker Hub username
   dockerHubPassword: '<abc1234567>'  # Replace with your Docker Hub password
   dockerHubRepo: '<shaheerahmed123/docker-image-azure>'
 
