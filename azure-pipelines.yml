@@ -124,8 +124,8 @@ stages:
       displayName: 'Push Docker image to Docker Hub'
       inputs:
         command: 'push'
-        repository: '$(dockerHubRepo)'
-        tags: '$(Build.BuildId)'
+        repository: 'shaheerahmed123/docker-image-azure'
+        tags: '83'
       env:
         DOCKERHUB_USERNAME: $(dockerHubUsername)
         DOCKERHUB_PASSWORD: $(dockerHubPassword)
