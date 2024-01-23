@@ -130,17 +130,16 @@ stages:
       vmImage: ubuntu-latest
 
     steps:
-    - task: Docker@2
+     - task: Bash@3
       displayName: Login to Docker Hub
       inputs:
-        command: 'login'
-        #containerRegistry: 'https://index.docker.io/v1/'
-        username: '$(dockerHubUsername)'  # Use the variable for Docker Hub username
-        password: '$(dockerHubPassword)'  # Use the variable for Docker Hub password
-
+        targetType: 'inline'
+        script: |
+          echo "$(dockerHubPassword)" | docker login -u "$(dockerHubUsername)" --password-stdin
+          
     - task: Docker@2
       displayName: Push Docker Image
       inputs:
         command: 'push'
-        repository: '$(dockerRegistry)/<ShaheerAhmed123>/<IMAGE_NAME>'  # Replace with your Docker Hub repository and image name
+        repository: '<your-dockerhub-username>/<your-image-name>'  # Replace with your Docker Hub repository and image name
         tags: 'latest,$(tag)'
