@@ -139,7 +139,6 @@ stages:
       displayName: Push to Docker Hub
       inputs:
         containerRegistry: 'DockerHubConnection' # Use a service connection named DockerHubConnection
-        repository: $(dockerHubRepository)
+        repository: $(dockerHubRepo)
         command: 'push'
-        tags: |
-          $(tag)
+        tags: 'latest'  # Adjust the tag as needed
