@@ -134,8 +134,8 @@ stages:
     steps:
     - script: |
         
-        docker tag "$IMAGE_NAME" "$IMAGE_NAME:$tag"
+        docker tag "$IMAGE_NAME" "$IMAGE_NAME:$TAGS"
         docker login
-        docker push "$IMAGE_NAME:$tag"
+        docker push "$IMAGE_NAME:$TAGS"
 
       displayName: 'Push Docker Image'
