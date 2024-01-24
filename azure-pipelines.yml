@@ -16,9 +16,8 @@ resources:
 variables:
   tag: '$(Build.BuildId)'
   projectname: 'my-dev'
-  dockerRegistry: 'your-docker-registry-url'
-  dockerUsername: 'your-docker-username'
-  dockerPassword: 'your-docker-password'
+  dockerUsername: 'shaheerahmed123'
+  dockerPassword: 'abc123467'
 
 stages:
 - stage: Deploy
@@ -131,7 +130,7 @@ stages:
 
     steps:
     - script: |
-        docker login -u $(dockerUsername) -p $(dockerPassword)
-        docker tag $IMAGE_NAME 
-        docker push $(dockerUsername)/docker-image-azure:latest
+        docker tag "$IMAGE_NAME" shaheerahmed123/docker-image-azure
+        docker login
+        docker push shaheerahmed123/docker-image-azure
       displayName: 'Push Docker Image'
