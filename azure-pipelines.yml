@@ -16,10 +16,9 @@ resources:
 variables:
   tag: '$(Build.BuildId)'
   projectname: 'my-dev'
-  DOCKER_USERNAME='shaheerahmed123'
-  DOCKER_PASSWORD='abc1234567'
-  DOCKER_REPOSITORY='shaheerahmed123/docker-image-azure'
-
+  dockerRegistry: 'your-docker-registry-url'
+  dockerUsername: 'your-docker-username'
+  dockerPassword: 'your-docker-password'
 
 stages:
 - stage: Deploy
@@ -89,7 +88,7 @@ stages:
           # Build the Docker image with the given name, with or without cache
           if [ "$USE_CACHE" = true ]; then
 
-              docker build -t "$DOCKER_USERNAME/$DOCKER_REPOSITORY:latest" --shm-size="$SHM_SIZE" "$BUILD_CONTEXT"
+               docker build -t "$IMAGE_NAME" --shm-size="$SHM_SIZE" "$BUILD_CONTEXT"
 
           else
               docker build --no-cache -t "$IMAGE_NAME" --shm-size="$SHM_SIZE" "$BUILD_CONTEXT"
@@ -117,7 +116,7 @@ stages:
           fi
 
         workingDirectory: '$(Build.SourcesDirectory)'
-        
+
 - stage: PushToDockerHub
   displayName: Push to Docker Hub
   jobs:
@@ -132,7 +131,7 @@ stages:
 
     steps:
     - script: |
-    
-          docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
-          docker push "$DOCKER_USERNAME/$DOCKER_REPOSITORY:latest"
+        docker login -u $(dockerUsername) -p $(dockerPassword)
+        docker tag "$IMAGE_NAME" "$(dockerUsername)/docker-image-azure:latest"
+        docker push "$(dockerUsername)/docker-image-azure:latest"
       displayName: 'Push Docker Image'
