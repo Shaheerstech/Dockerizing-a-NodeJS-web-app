@@ -18,6 +18,8 @@ variables:
   projectname: 'my-dev'
   dockerUsername: 'shaheerahmed123'
   dockerPassword: 'abc123467'
+  dockerRepository: 'shaheerahmed123/docker-image-azure'
+
 
 stages:
 - stage: Deploy
@@ -130,7 +132,7 @@ stages:
 
     steps:
     - script: |
-        docker tag "$IMAGE_NAME" shaheerahmed123/docker-image-azure
+        docker tag "$IMAGE_NAME" "$dockerUsername/$dockerRepository"
         docker login
-        docker push shaheerahmed123/docker-image-azure
+        docker push "$dockerUsername/$dockerRepository"
       displayName: 'Push Docker Image'
