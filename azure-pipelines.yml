@@ -134,9 +134,8 @@ stages:
     steps:
     - script: |
         
-        # Assuming IMAGE_NAME is in the format "repository-name:tag"
         docker tag "$IMAGE_NAME" "$IMAGE_NAME:$tag"
         docker login
-        docker push shaheerahmed123/docker-image-azure:$tag
+        docker push "$IMAGE_NAME:$tag"
 
       displayName: 'Push Docker Image'
