@@ -130,17 +130,18 @@ stages:
       - Agent.OS -equals Linux
       vmImage: ubuntu-latest
 
-steps:
-- script: |
-    # Build the Docker image
-    docker build --no-cache -t $(dockerRepository):$(tag) --shm-size="$SHM_SIZE" "$BUILD_CONTEXT"
 
-    # Tag the Docker image
-    docker tag $(dockerRepository):$(tag) $(dockerUsername)/$(dockerRepository):$(tag)
-    
-    # Log in to Docker Hub
-    echo "$(dockerPassword)" | docker login -u "$(dockerUsername)" --password-stdin
+    steps:
+    - script: |
+        
+        docker build --no-cache -t $(dockerRepository):$(tag) --shm-size="$SHM_SIZE" "$BUILD_CONTEXT"
 
-    # Push the Docker image to Docker Hub
-    docker push $(dockerUsername)/$(dockerRepository):$(tag)
-  displayName: 'Build and Push Docker Image'
+        
+        docker tag $(dockerRepository):$(tag) $(dockerUsername)/$(dockerRepository):$(tag)
+        
+        # Log in to Docker Hub
+        echo "$(dockerPassword)" | docker login -u "$(dockerUsername)" --password-stdin
+
+        # Push the Docker image to Docker Hub
+        docker push $(dockerUsername)/$(dockerRepository):$(tag)
+      displayName: 'Push Docker Image'
