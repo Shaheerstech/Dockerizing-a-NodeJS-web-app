@@ -136,7 +136,7 @@ stages:
       displayName: Login to Docker Hub
       inputs:
         command: 'login'
-        containerRegistry: '$(dockerRegistry)'
+        containerRegistry: 'shaheerahmed123/docker-image-azure'
         username: '$(dockerUsername)'
         password: '$(dockerPassword)'
 
@@ -144,6 +144,6 @@ stages:
       displayName: Push Docker Image
       inputs:
         command: 'push'
-        containerRegistry: '$(dockerRegistry)'
+        containerRegistry: 'shaheerahmed123/docker-image-azure'
         repository: '$(dockerUsername)/your-repository-name'
         tags: 'latest $(tag)'
