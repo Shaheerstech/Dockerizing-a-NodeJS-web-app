@@ -133,9 +133,24 @@ stages:
 
     steps:
     - script: |
-        
-        docker tag "$IMAGE_NAME" "$IMAGE_NAME:$TAGS"
-        docker login
-        docker push "$IMAGE_NAME:$TAGS"
+      
+        TAGS="latest"
+
+          # Set the name of the image
+          IMAGE_NAME="${DEP_PROJECT}-${DEP_NAME}"
+
+          # Build the Docker image
+          docker build -t "$IMAGE_NAME" .
+
+         # Add tags to the image
+          for tag in $TAGS; do
+          docker tag "$IMAGE_NAME" "$IMAGE_NAME:$tag"
+          done
+          docker login
+
+        # Push the tagged Docker image to Docker Hub
+          for tag in $TAGS; do
+          docker push "$IMAGE_NAME:$tag"
+          done
 
       displayName: 'Push Docker Image'
