@@ -16,11 +16,10 @@ resources:
 variables:
   tag: '$(Build.BuildId)'
   projectname: 'my-dev'
-  #dockerRegistry: 'docker.io'  # Specify your Docker registry here
-  dockerHubUsername: 'shaheerahmed123'  # Replace with your Docker Hub username
-  dockerHubPassword: 'abc1234567'  # Replace with your Docker Hub password
-  dockerHubRepo: 'shaheerahmed123/docker-image-azure'
-
+  dockerRegistry: 'shaheerahmed123/docker-image-azure'
+  dockerUsername: 'shaheerahmed123'
+  dockerPassword: 'abc1234567'
+  
 
 
 stages:
@@ -124,21 +123,27 @@ stages:
   displayName: Push to Docker Hub
   jobs:
   - job: Push
+    timeoutInMinutes: 30
     displayName: Push
     pool:
       name: 'Azure Pipelines'
       demands:
       - Agent.OS -equals Linux
       vmImage: ubuntu-latest
-      
+
     steps:
-    - checkout: self
-      clean: true
+    - task: Docker@2
+      displayName: Login to Docker Hub
+      inputs:
+        command: 'login'
+        containerRegistry: '$(dockerRegistry)'
+        username: '$(dockerUsername)'
+        password: '$(dockerPassword)'
 
     - task: Docker@2
-      displayName: Push to Docker Hub
+      displayName: Push Docker Image
       inputs:
-        containerRegistry: 'DockerHubConnection' # Use a service connection named DockerHubConnection
-        repository: $(dockerHubRepo)
         command: 'push'
-        tags: 'latest'  # Adjust the tag as needed
+        containerRegistry: '$(dockerRegistry)'
+        repository: '$(dockerUsername)/your-repository-name'
+        tags: 'latest $(tag)'
