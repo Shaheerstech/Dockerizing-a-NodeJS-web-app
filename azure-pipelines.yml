@@ -134,6 +134,6 @@ stages:
     steps:
     - script: |
         docker login -u $(dockerUsername) -p $(dockerPassword)
-        docker tag "$IMAGE_NAME:latest" "$dockerUsername/docker-image-azure:latest"
+        docker tag "$IMAGE_NAME" "$dockerUsername/docker-image-azure:latest"
         docker push $shaheerahmed123/docker-image-azure:latest
       displayName: 'Push Docker Image'
