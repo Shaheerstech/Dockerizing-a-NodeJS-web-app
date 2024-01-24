@@ -137,6 +137,7 @@ stages:
           docker login -u $(dockerUsername) -p $(dockerPassword)
 
           # Push the Docker image to Docker Hub
-          docker push "${dockerUsername}/${DEP_PROJECT}-${DEP_NAME}:${TAGS}"
+          # Push the Docker image to Docker Hub with the "latest" tag
+           docker push "${dockerUsername}/${DEP_PROJECT}-${DEP_NAME}:latest"
 
       displayName: 'Push Docker Image'
