@@ -17,7 +17,7 @@ variables:
   tag: '$(Build.BuildId)'
   projectname: 'my-dev'
   dockerUsername: 'shaheerahmed123'
-  dockerPassword: 'abc123467'
+  dockerPassword: 'abc1234567'
   dockerRepository: 'shaheerahmed123/docker-image-azure'
 
 
@@ -134,14 +134,9 @@ stages:
     steps:
     - script: |
         
-        docker build --no-cache -t $(dockerRepository):$(tag) --shm-size="$SHM_SIZE" "$BUILD_CONTEXT"
+        # Assuming IMAGE_NAME is in the format "repository-name:tag"
+        docker tag "$IMAGE_NAME" "$IMAGE_NAME:$tag"
+        docker login
+        docker push shaheerahmed123/docker-image-azure:$tag
 
-        
-        docker tag $(dockerRepository):$(tag) $(dockerUsername)/$(dockerRepository):$(tag)
-        
-        # Log in to Docker Hub
-        echo "$(dockerPassword)" | docker login -u "$(dockerUsername)" --password-stdin
-
-        # Push the Docker image to Docker Hub
-        docker push $(dockerUsername)/$(dockerRepository):$(tag)
       displayName: 'Push Docker Image'
