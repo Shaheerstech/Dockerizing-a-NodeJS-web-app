@@ -79,7 +79,7 @@ stages:
           fi
 
           # Set a variable to indicate whether or not to use cache during the build
-          if [ -z ${USE_CACHE+x} ]; then
+          if [ "${{ variables.USE_CACHE }}" = true ]; then
             USE_CACHE=true
           fi
           # Set the name of the image
