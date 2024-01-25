@@ -16,8 +16,8 @@ resources:
 variables:
   tag: '$(Build.BuildId)'
   projectname: 'my-dev'
-  dockerUsername: '$(shaheerahmed123)'
-  dockerPassword: '$(abc1234567)'
+  dockerUsername: 'shaheerahmed123'
+  dockerPassword: 'abc1234567'
  
 
 stages:
