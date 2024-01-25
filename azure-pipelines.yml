@@ -18,7 +18,7 @@ variables:
   projectname: 'my-dev'
   dockerUsername: 'shaheerahmed123'
   dockerPassword: 'abc1234567'
-
+ 
 
 stages:
 - stage: Deploy
@@ -83,7 +83,7 @@ stages:
             USE_CACHE=true
           fi
           # Set the name of the image
-          IMAGE_NAME="${DEP_PROJECT}-${DEP_NAME}"
+          IMAGE_NAME="${DEP_PROJECT}-${DEP_NAME}.toLowerCase()"
 
           # Build the Docker image with the given name, with or without cache
           if [ "$USE_CACHE" = true ]; then
@@ -137,7 +137,12 @@ stages:
           docker login -u $(dockerUsername) -p $(dockerPassword)
 
           # Push the Docker image to Docker Hub
-          # Push the Docker image to Docker Hub with the "latest" tag
-          docker push "${dockerUsername}/${IMAGE_NAME,,}:${TAGS}"
+          echo "Docker Push Command: docker push ${dockerUsername}/${IMAGE_NAME}:${TAGS}"
+          docker push "$(dockerUsername)/$(IMAGE_NAME):$(TAGS)"
+
+          echo "dockerUsername: ${dockerUsername}"
+          echo "IMAGE_NAME: ${IMAGE_NAME}"
+          echo "TAGS: ${TAGS}"
+
 
       displayName: 'Push Docker Image'
