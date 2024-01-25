@@ -49,11 +49,11 @@ stages:
 
           # Set Project that container is related to, defaults to Misc
           if [ -z ${DEP_PROJECT+x} ]; then
-            DEP_PROJECT='misc'
+            dep_project='misc'
           fi
 
           # Set Container Name
-          DEP_NAME="myapp"
+          dep_name="myapp"
 
           # Set the build context
           BUILD_CONTEXT="."
@@ -82,7 +82,7 @@ stages:
             USE_CACHE=true
           fi
           # Set the name of the image
-          IMAGE_NAME="${DEP_PROJECT}-${DEP_NAME}"
+          IMAGE_NAME="${dep_project}-${dep_name}"
 
           # Build the Docker image with the given name, with or without cache
           if [ "$USE_CACHE" = true ]; then
@@ -100,7 +100,7 @@ stages:
           done
 
           # Set the name of the container
-          CONTAINER_NAME="${DEP_PROJECT}-${DEP_NAME}"
+          CONTAINER_NAME="${dep_project}-${dep_name}"
 
           # Check if the container already exists
           if [ "$(docker ps -aq -f name=$CONTAINER_NAME)" ]; then
