@@ -1,24 +1,18 @@
 pr:
   autoCancel: true
-  # if true, AutoCancel will cancel the existing deployment and replace it if a new pull request is created during deployment.
   branches:
     include:
       - development
-  # Only trigger the pipeline when the pull request is approved
-  # condition: and(succeeded(), eq(variables['System.PullRequest.IsDraft'], 'false'), eq(variables['System.PullRequest.IsApproved'], 'true'))
-
-# trigger: 
-# - development
 
 resources:
-- repo: self
+  repositories:
+    - repository: self
 
 variables:
   tag: '$(Build.BuildId)'
   projectname: 'my-dev'
-  dockerUsername: 'shaheerahmed123'
-  dockerPassword: 'abc1234567'
- 
+  dockerHubUsername: 'shaheerahmed123'
+  dockerHubPassword: 'abc1234567'
 
 stages:
 - stage: Deploy
@@ -32,21 +26,17 @@ stages:
       demands:
       - Agent.OS -equals Linux
       vmImage: ubuntu-latest
-      #- docker
-      #- Agent.Version -gtVersion 2.163.1
-      
+
     steps:
     - checkout: self
       clean: true
 
     - task: Bash@3
-      displayName: Build / Deploy myapp
+      displayName: 'Build / Deploy myapp'
       inputs:
         targetType: 'inline'
         script: |
           #!/bin/bash
-
-          
 
           # Set Project that container is related to, defaults to Misc
           if [ -z ${DEP_PROJECT+x} ]; then
@@ -72,34 +62,38 @@ stages:
           ENV_FILE="${ENV_FILE:-.env}"
 
           # Check if the Docker binary exists
-          if ! command -v docker &> /dev/null
-          then
+          if ! command -v docker &> /dev/null; then
               echo "Error: Docker binary not found."
               exit 1 # Exit and indicate error
           fi
 
           # Set a variable to indicate whether or not to use cache during the build
-          if [ "${{ variables.USE_CACHE }}" = true ]; then
+          if [ -z ${USE_CACHE+x} ]; then
             USE_CACHE=true
           fi
+
           # Set the name of the image
           IMAGE_NAME="${DEP_PROJECT}-${DEP_NAME}"
 
           # Build the Docker image with the given name, with or without cache
           if [ "$USE_CACHE" = true ]; then
-
                docker build -t "$IMAGE_NAME" --shm-size="$SHM_SIZE" "$BUILD_CONTEXT"
-
           else
               docker build --no-cache -t "$IMAGE_NAME" --shm-size="$SHM_SIZE" "$BUILD_CONTEXT"
           fi
 
           # Add the tags to the image
           for tag in $TAGS; do
-          docker tag "${DEP_PROJECT}-${DEP_NAME}:latest" "$(dockerUsername)/${DEP_PROJECT}-${DEP_NAME}:latest"
-
-              echo "Tagging Image $IMAGE_NAME:$tag"
+             docker tag "$IMAGE_NAME" "$IMAGE_NAME:$tag"
+             echo "Tagging Image $IMAGE_NAME:$tag"
           done
+
+          # Authenticate Docker Hub
+          docker login -u $(dockerUsername) -p $(dockerPassword)
+
+
+          # Push the image to Docker Hub
+          docker push "$IMAGE_NAME"
 
           # Set the name of the container
           CONTAINER_NAME="${DEP_PROJECT}-${DEP_NAME}"
@@ -115,30 +109,3 @@ stages:
                   docker rm -f $CONTAINER_NAME
               fi
           fi
-
-        workingDirectory: '$(Build.SourcesDirectory)'
-
-- stage: PushToDockerHub
-  displayName: Push to Docker Hub
-  jobs:
-  - job: Push
-    timeoutInMinutes: 30
-    displayName: Push
-    pool:
-      name: 'Azure Pipelines'
-      demands:
-      - Agent.OS -equals Linux
-      vmImage: ubuntu-latest
-
-
-    steps:
-    - script: |
-      
-        # Log in to Docker Hub
-          docker login -u $(dockerUsername) -p $(dockerPassword)
-
-          # Push the Docker image to Docker Hub
-           docker push "$(dockerUsername)/${DEP_PROJECT}-${DEP_NAME}:latest"
-
-
-      displayName: 'Push Docker Image'
