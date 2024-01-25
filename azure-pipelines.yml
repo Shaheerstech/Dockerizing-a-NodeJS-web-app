@@ -137,6 +137,6 @@ stages:
           docker login -u $(dockerUsername) -p $(dockerPassword)
 
           # Push the Docker image to Docker Hub
-          docker push "$(dockerUsername)/$(IMAGE_NAME):$(TAGS)"
+          docker push "$IMAGE_NAME"
 
       displayName: 'Push Docker Image'
