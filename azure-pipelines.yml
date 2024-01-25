@@ -16,8 +16,8 @@ resources:
 variables:
   tag: '$(Build.BuildId)'
   projectname: 'my-dev'
-  dockerUsername: 'shaheerahmed123'
-  dockerPassword: 'abc1234567'
+  dockerUsername: '$(shaheerahmed123)'
+  dockerPassword: '$(abc1234567)'
  
 
 stages:
@@ -133,22 +133,10 @@ stages:
     steps:
     - script: |
       
-        # Log in to Docker Hub non-interactively
-          echo $dockerPassword | docker login -u $dockerUsername --password-stdin
-
-          # Build the Docker image with the given name, with or without cache
-          if [ "$USE_CACHE" = true ]; then
-            docker build -t "$dockerUsername/$IMAGE_NAME" --shm-size="$SHM_SIZE" "$BUILD_CONTEXT"
-          else
-            docker build --no-cache -t "$dockerUsername/$IMAGE_NAME" --shm-size="$SHM_SIZE" "$BUILD_CONTEXT"
-          fi
-
-          # Add the tags to the image
-          for tag in $TAGS; do
-            docker tag "$dockerUsername/$IMAGE_NAME" "$dockerUsername/$IMAGE_NAME:$tag"
-            echo "Tagging Image $dockerUsername/$IMAGE_NAME:$tag"
-          done
+        # Log in to Docker Hub
+          docker login -u $(dockerUsername) -p $(dockerPassword)
 
           # Push the Docker image to Docker Hub
-          docker push "$dockerUsername/$IMAGE_NAME:$TAGS"
+          docker push "$(dockerUsername)/$(IMAGE_NAME):$(TAGS)"
+
       displayName: 'Push Docker Image'
