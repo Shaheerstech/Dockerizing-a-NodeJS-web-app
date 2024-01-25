@@ -83,7 +83,7 @@ stages:
             USE_CACHE=true
           fi
           # Set the name of the image
-          IMAGE_NAME="${DEP_PROJECT}-${DEP_NAME}.toLowerCase()"
+          IMAGE_NAME="${DEP_PROJECT}-${DEP_NAME}"
 
           # Build the Docker image with the given name, with or without cache
           if [ "$USE_CACHE" = true ]; then
