@@ -96,7 +96,8 @@ stages:
 
           # Add the tags to the image
           for tag in $TAGS; do
-             docker tag "$IMAGE_NAME" "$IMAGE_NAME:$tag"
+          docker tag "${DEP_PROJECT}-${DEP_NAME}:latest" "$(dockerUsername)/${DEP_PROJECT}-${DEP_NAME}:latest"
+
               echo "Tagging Image $IMAGE_NAME:$tag"
           done
 
@@ -137,6 +138,7 @@ stages:
           docker login -u $(dockerUsername) -p $(dockerPassword)
 
           # Push the Docker image to Docker Hub
-          docker push "$IMAGE_NAME"
+           docker push "$(dockerUsername)/${DEP_PROJECT}-${DEP_NAME}:latest"
+
 
       displayName: 'Push Docker Image'
