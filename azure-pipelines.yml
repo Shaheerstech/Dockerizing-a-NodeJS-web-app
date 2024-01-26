@@ -12,8 +12,8 @@ variables:
   projectname: 'my-dev'
 
 stages:
-- stage: Deploy
-  displayName: Build / Deploy Images
+- stage: Build
+  displayName: Build Docker Image
   jobs:
   - job: Build
     timeoutInMinutes: 120
@@ -29,7 +29,7 @@ stages:
       clean: true
 
     - task: Bash@3
-      displayName: Build / Deploy myapp
+      displayName: Build myapp
       inputs:
         targetType: 'inline'
         script: |
@@ -49,9 +49,9 @@ stages:
           # Set the tags you want to add to the image
           TAGS="latest"
 
-          # Set the Docker Hub username and password
-          DOCKERHUB_USERNAME="shaheerahmed123"
-          DOCKERHUB_ACCESS_TOKEN="dckr_pat_agZNg-0PAaDdeynCPpByXE2ri0A"
+          # Set the Docker Hub username and access token
+          DOCKERHUB_USERNAME="your_dockerhub_username"
+          DOCKERHUB_ACCESS_TOKEN="your_dockerhub_access_token"
 
           # Check if the Docker binary exists
           if ! command -v docker &> /dev/null
@@ -60,7 +60,7 @@ stages:
               exit 1 # Exit and indicate error
           fi
 
-          # Authenticate with Docker Hub
+          # Log in to Docker Hub using the access token
           echo "$DOCKERHUB_ACCESS_TOKEN" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
 
           # Set the name of the image
@@ -75,7 +75,41 @@ stages:
             echo "Tagging Image $IMAGE_NAME:$tag"
           done
 
+- stage: Push
+  displayName: Push Docker Image to Docker Hub
+  dependsOn: Build
+  jobs:
+  - job: Push
+    displayName: Push
+    pool:
+      name: 'Azure Pipelines'
+      demands:
+      - Agent.OS -equals Linux
+      vmImage: ubuntu-latest
+
+    steps:
+    - task: Bash@3
+      displayName: Push myapp to Docker Hub
+      inputs:
+        targetType: 'inline'
+        script: |
+          # Set Project that container is related to, defaults to Misc
+          if [ -z ${DEP_PROJECT+x} ]; then
+            DEP_PROJECT='misc'
+          fi
+
+          # Set Container Name
+          DEP_NAME="myapp"
+
+          # Set the Docker Hub username and access token
+          DOCKERHUB_USERNAME="shaheerahmed123"
+          DOCKERHUB_ACCESS_TOKEN="dckr_pat_R7gM-qcwxI9TxJazwpxNRjK9g8E"
+
+          # Log in to Docker Hub using the access token
+          echo "$DOCKERHUB_ACCESS_TOKEN" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
+
+          # Set the name of the image
+          IMAGE_NAME="${DOCKERHUB_USERNAME}/${DEP_PROJECT}-${DEP_NAME}"
+
           # Push the Docker image to Docker Hub
           docker push "$IMAGE_NAME"
-
-        workingDirectory: '$(Build.SourcesDirectory)'
