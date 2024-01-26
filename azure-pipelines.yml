@@ -64,7 +64,7 @@ stages:
           echo "$DOCKERHUB_ACCESS_TOKEN" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
 
           # Set the name of the image
-          IMAGE_NAME="${DOCKERHUB_USERNAME}/misc-${DEP_PROJECT}-${DEP_NAME}"
+          IMAGE_NAME="${DOCKERHUB_USERNAME}/${DEP_PROJECT}-${DEP_NAME}"
 
           # Build the Docker image
           docker build -t "$IMAGE_NAME" "$BUILD_CONTEXT"
@@ -109,7 +109,7 @@ stages:
           echo "$DOCKERHUB_ACCESS_TOKEN" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
 
           # Set the name of the image
-          IMAGE_NAME="${DOCKERHUB_USERNAME}/misc-${DEP_PROJECT}-${DEP_NAME}"
+          IMAGE_NAME="${DOCKERHUB_USERNAME}/${DEP_PROJECT}-${DEP_NAME}"
 
           # Push the Docker image to Docker Hub
           docker push "$IMAGE_NAME"
