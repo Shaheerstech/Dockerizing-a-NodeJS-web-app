@@ -51,7 +51,7 @@ stages:
 
           # Set the Docker Hub username and password
           DOCKERHUB_USERNAME="shaheerahmed123"
-          DOCKERHUB_PASSWORD="abc1234567"
+          DOCKERHUB_ACCESS_TOKEN="dckr_pat_agZNg-0PAaDdeynCPpByXE2ri0A"
 
           # Check if the Docker binary exists
           if ! command -v docker &> /dev/null
@@ -61,7 +61,7 @@ stages:
           fi
 
           # Authenticate with Docker Hub
-          docker login -u $(dockerUsername) -p $(dockerPassword)
+          echo "$DOCKERHUB_ACCESS_TOKEN" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
 
           # Set the name of the image
           IMAGE_NAME="${DOCKERHUB_USERNAME}/${DEP_PROJECT}-${DEP_NAME}"
