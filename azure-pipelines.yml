@@ -137,5 +137,12 @@ stages:
 
           # Push the Docker image to Docker Hub
           docker push "${dockerUsername}/${IMAGE_NAME}:${TAGS}"
+          
+          # Print variable values for verification
+          echo "dockerUsername: ${dockerUsername}"
+          echo "dockerPassword: ${dockerPassword}"
+          echo "IMAGE_NAME: ${IMAGE_NAME}"
+          echo "TAGS: ${TAGS}"
+
 
       displayName: 'Push Docker Image'
