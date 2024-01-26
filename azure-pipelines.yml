@@ -1,14 +1,8 @@
 pr:
   autoCancel: true
-  # if true, AutoCancel will cancel the existing deployment and replace it if a new pull request is created during deployment.
   branches:
     include:
       - development
-  # Only trigger the pipeline when the pull request is approved
-  # condition: and(succeeded(), eq(variables['System.PullRequest.IsDraft'], 'false'), eq(variables['System.PullRequest.IsApproved'], 'true'))
-
-# trigger: 
-# - development
 
 resources:
 - repo: self
@@ -16,8 +10,6 @@ resources:
 variables:
   tag: '$(Build.BuildId)'
   projectname: 'my-dev'
-  dockerUsername: 'shaheerahmed123'
-  dockerPassword: 'abc1234567'
 
 stages:
 - stage: Deploy
@@ -31,9 +23,7 @@ stages:
       demands:
       - Agent.OS -equals Linux
       vmImage: ubuntu-latest
-      #- docker
-      #- Agent.Version -gtVersion 2.163.1
-      
+
     steps:
     - checkout: self
       clean: true
@@ -45,15 +35,13 @@ stages:
         script: |
           #!/bin/bash
 
-          
-
           # Set Project that container is related to, defaults to Misc
           if [ -z ${DEP_PROJECT+x} ]; then
-            dep_project='misc'
+            DEP_PROJECT='misc'
           fi
 
           # Set Container Name
-          dep_name="myapp"
+          DEP_NAME="myapp"
 
           # Set the build context
           BUILD_CONTEXT="."
@@ -61,14 +49,9 @@ stages:
           # Set the tags you want to add to the image
           TAGS="latest"
 
-          # List of ports to add to the Docker container
-          PORTS="${myapp}"
-
-          # Set the shared memory size for the container
-          SHM_SIZE="2g"
-
-          # Set the path to the environment file (default to .env)
-          ENV_FILE="${ENV_FILE:-.env}"
+          # Set the Docker Hub username and password
+          DOCKERHUB_USERNAME="shaheerahmed123"
+          DOCKERHUB_PASSWORD="abc1234567"
 
           # Check if the Docker binary exists
           if ! command -v docker &> /dev/null
@@ -77,72 +60,22 @@ stages:
               exit 1 # Exit and indicate error
           fi
 
-          # Set a variable to indicate whether or not to use cache during the build
-          if [ -z ${USE_CACHE+x} ]; then
-            USE_CACHE=true
-          fi
+          # Authenticate with Docker Hub
+          docker login -u $(dockerUsername) -p $(dockerPassword)
+
           # Set the name of the image
-          IMAGE_NAME="${dep_project}-${dep_name}"
+          IMAGE_NAME="${DOCKERHUB_USERNAME}/${DEP_PROJECT}-${DEP_NAME}"
 
-          # Build the Docker image with the given name, with or without cache
-          if [ "$USE_CACHE" = true ]; then
-
-               docker build -t "$IMAGE_NAME" --shm-size="$SHM_SIZE" "$BUILD_CONTEXT"
-
-          else
-              docker build --no-cache -t "$IMAGE_NAME" --shm-size="$SHM_SIZE" "$BUILD_CONTEXT"
-          fi
+          # Build the Docker image
+          docker build -t "$IMAGE_NAME" "$BUILD_CONTEXT"
 
           # Add the tags to the image
           for tag in $TAGS; do
-             docker tag "$IMAGE_NAME" "$IMAGE_NAME:$tag"
-              echo "Tagging Image $IMAGE_NAME:$tag"
+            docker tag "$IMAGE_NAME" "$IMAGE_NAME:$tag"
+            echo "Tagging Image $IMAGE_NAME:$tag"
           done
 
-          # Set the name of the container
-          CONTAINER_NAME="${dep_project}-${dep_name}"
-
-          # Check if the container already exists
-          if [ "$(docker ps -aq -f name=$CONTAINER_NAME)" ]; then
-              # Stop the existing container
-              docker stop $CONTAINER_NAME
-
-              # Remove the existing container, with error handling to forcibly remove it if there's an issue
-              if ! docker rm $CONTAINER_NAME; then
-                  echo "Error: Failed to remove existing container. Forcibly removing container..."
-                  docker rm -f $CONTAINER_NAME
-              fi
-          fi
+          # Push the Docker image to Docker Hub
+          docker push "$IMAGE_NAME"
 
         workingDirectory: '$(Build.SourcesDirectory)'
-        
-- stage: PushToDockerHub
-  displayName: Push to Docker Hub
-  jobs:
-  - job: Push
-    timeoutInMinutes: 30
-    displayName: Push
-    pool:
-      name: 'Azure Pipelines'
-      demands:
-      - Agent.OS -equals Linux
-      vmImage: ubuntu-latest
-
-
-    steps:
-    - script: |
-      
-        # Log in to Docker Hub
-          docker login -u $(dockerUsername) -p $(dockerPassword)
-
-          # Push the Docker image to Docker Hub
-          docker push "${dockerUsername}/${IMAGE_NAME}:${TAGS}"
-          
-          # Print variable values for verification
-          echo "dockerUsername: ${dockerUsername}"
-          echo "dockerPassword: ${dockerPassword}"
-          echo "IMAGE_NAME: ${IMAGE_NAME}"
-          echo "TAGS: ${TAGS}"
-
-
-      displayName: 'Push Docker Image'
